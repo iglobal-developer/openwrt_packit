@@ -50,7 +50,7 @@ SCRIPT_S922X_N2_FILE="mk_s922x_odroid-n2.sh"
 SCRIPT_DIY_FILE="mk_diy.sh"
 
 # Set make.env related parameters
-WHOAMI_VALUE="flippy"
+WHOAMI_VALUE="BGG"
 OPENWRT_VER_VALUE="auto"
 SW_FLOWOFFLOAD_VALUE="1"
 HW_FLOWOFFLOAD_VALUE="0"
