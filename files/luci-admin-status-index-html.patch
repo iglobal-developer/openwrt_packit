@@ -41,7 +41,7 @@
  			if (e = document.getElementById('uptime'))
  				e.innerHTML = String.format('%t', info.uptime);
  				
-@@ -708,6 +712,7 @@
+@@ -708,6 +712,8 @@
  		<tr><td width="33%"><%:Kernel Version%></td><td><%=unameinfo.release or "?"%></td></tr>
  		<tr><td width="33%"><%:Local Time%></td><td id="localtime">-</td></tr>
  		<tr><td width="33%"><%:Uptime%></td><td id="uptime">-</td></tr>
