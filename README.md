@@ -1,75 +1,75 @@
-这是 Flippy 的 Openwrt 打包源码，主要用于制作 Phicomm N1、贝壳云、我家云、微加云、Amlogic S905x3、Amlogic S922x等一系列盒子的 openwrt固件。
+This is Flippy's Openwrt packaged source code, which is mainly used to make openwrt firmware for a series of boxes such as Phicomm N1, Shell Cloud, My Home Cloud, Weijia Cloud, Amlogic S905x3, and Amlogic S922x.
 
-一、制作材料：
-1. Flippy预编译好的 Arm64 内核 (在 https://t.me/openwrt_flippy  及 https://pan.baidu.com/s/1tY_-l-Se2qGJ0eKl7FZBuQ 提取码：846l)
-2. 自己编译的 openwrt rootfs tar.gz 包： openwrt-armvirt-64-default-rootfs.tar.gz , openwrt的源码仓库首选 (https://github.com/coolsnowwolf/lede)  ，当然也可以采用其它第三方源，例如 (https://github.com/Lienol/openwrt) , 也可以采用 openwrt 官方源： (https://github.com/openwrt/openwrt)。
+1. Material:
+1. Flippy precompiled Arm64 kernel (extract code at https://t.me/openwrt_flippy and https://pan.baidu.com/s/1tY_-l-Se2qGJ0eKl7FZBuQ: 846l)
+2. The openwrt rootfs tar.gz package compiled by yourself: openwrt-armvirt-64-default-rootfs.tar.gz , the source code repository of openwrt is the first choice (https://github.com/coolsnowwolf/lede), of course, you can also use other Third-party sources, such as (https://github.com/Lienol/openwrt), can also use the official openwrt source: (https://github.com/openwrt/openwrt).
 
-二、环境准备
-1. 需要一台 linux 主机， 可以是 x86或arm64架构，可以是物理机或虚拟机（但不支持win10自带的linux环境），需要具备root权限， 并且具备以下基本命令（只列出命令名，不列出命令所在的包名，因不同linux发行版的软件包名、软件包安装命令各有不同，请自己查询)： 
-    losetup、lsblk(版本>=2.33)、blkid、uuidgen、fdisk、parted、mkfs.vfat、mkfs.ext4、mkfs.btrfs (列表不一定完整，打包过程中若发生错误，请自行检查输出结果并添加缺失的命令）
+2. Environmental preparation
+1. You need a linux host, which can be x86 or arm64 architecture, can be a physical machine or a virtual machine (but does not support the linux environment that comes with win10), requires root privileges, and has the following basic commands (only the command name is listed) , the package name where the command is located is not listed, because the package names and package installation commands of different linux distributions are different, please check it yourself):
+    losetup, lsblk (version>=2.33), blkid, uuidgen, fdisk, parted, mkfs.vfat, mkfs.ext4, mkfs.btrfs (the list may not be complete, if an error occurs during the packaging process, please check the output by yourself and add the missing The command)
     
-2. 需要把 Flippy预编译好的 Arm64 内核上传至 /opt/kernel目录（目录需要自己创建）
-3. cd  /opt   
+2. You need to upload the Flippy precompiled Arm64 kernel to the /opt/kernel directory (the directory needs to be created by yourself)
+3. cd /opt   
    git clone https://github.com/unifreq/openwrt_packit     
-4. 把编译好的 openwrt-armvirt-64-default-rootfs.tar.gz 上传至 /opt/openwrt_packit目录中
+4. Upload the compiled openwrt-armvirt-64-default-rootfs.tar.gz to the /opt/openwrt_packit directory
 5. cd /opt/openwrt_packit
 
-   ./mk_xxx.sh  # xxx指代你想要生成的固件类别，例如： ./mk_s905d_n1.sh 表示生成 Phicomm N1所用的固件
+   ./mk_xxx.sh # xxx refers to the type of firmware you want to generate, for example: ./mk_s905d_n1.sh represents the firmware used to generate Phicomm N1
 
-   生成好的固件是 .img 格式， 存放在 /opt/openwrt_packit/output 目录中，下载刷机即可
+   The generated firmware is in .img format, stored in the /opt/openwrt_packit/output directory, and can be downloaded and flashed
    
-   提示:工作临时目录是 /opt/openwrt_packit/tmp, 为了提升IO性能，减少硬盘损耗，可以采用tmpfs文件系统挂载到该目录，最多会占用 1GB 内存， 挂载方法如下:
-   ```
-   # 开机自动挂载
-   echo "none /opt/openwrt_packit/tmp  tmpfs   defaults   0  0" >> /etc/fstab
+   Tip: The working temporary directory is /opt/openwrt_packit/tmp. In order to improve IO performance and reduce hard disk loss, the tmpfs file system can be used to mount to this directory, which will occupy up to 1GB of memory. The mounting method is as follows:
+   ````
+   # Automatically mount at boot
+   echo "none /opt/openwrt_packit/tmp tmpfs defaults 0 0" >> /etc/fstab
    mount /opt/openwrt_packit/tmp
-   ```
-    或者
-    ```
-    # 手动挂载
-    mount -t tmpfs  none /opt/openwrt_packit/tmp
-    ```
+   ````
+    or
+    ````
+    # Manually mount
+    mount -t tmpfs none /opt/openwrt_packit/tmp
+    ````
    
-   相关的在线升级脚本在 files/目录下
+   The relevant online upgrade scripts are in the files/ directory
 
-   相关的 openwrt 示例配置文件在 files/openwrt_config_demo/目录下
-6. openwrt rootfs 编译注意事项：
+   The relevant openwrt example configuration files are in the files/openwrt_config_demo/ directory
+6. Notes on compiling openwrt rootfs:
 
-       Target System  ->  QEMU ARM Virtual Machine 
-       Subtarget ->  QEMU ARMv8 Virtual Machine (cortex-a53)
-       Target Profile  ->  Default
-       Target Images  ->   tar.gz
-       *** 必选软件包(基础依赖包，仅保证打出的包可以写入EMMC,可以在EMMC上在线升级，不包含具体的应用)： 
-       Languages -> Perl               
-                    ->  perl-http-date
-                    ->  perlbase-getopt
-                    ->  perlbase-time
-                    ->  perlbase-unicode                              
-                    ->  perlbase-utf8        
-       Utilities -> Disc -> blkid、fdisk、lsblk、parted            
-                 -> Filesystem -> attr、btrfs-progs(Build with zstd support)、chattr、dosfstools、
-                                  e2fsprogs、f2fs-tools、f2fsck、lsattr、mkf2fs、xfs-fsck、xfs-mkfs
-                 -> Compression -> bsdtar 或 p7zip(非官方源)、pigz
-                 -> Shells  ->  bash         
-                 -> gawk、getopt、losetup、tar、uuidgen
+       Target System -> QEMU ARM Virtual Machine
+       Subtarget -> QEMU ARMv8 Virtual Machine (cortex-a53)
+       Target Profile -> Default
+       Target Images -> tar.gz
+       *** Required software package (basic dependency package, only guarantees that the typed package can be written to EMMC, can be upgraded online on EMMC, does not include specific applications):
+       Languages ​​-> Perl               
+                    -> perl-http-date
+                    -> perlbase-getopt
+                    -> perlbase-time
+                    -> perlbase-unicode                              
+                    -> perlbase-utf8        
+       Utilities -> Disc -> blkid, fdisk, lsblk, parted            
+                 -> Filesystem -> attr, btrfs-progs (Build with zstd support), chattr, dosfstools,
+                                  e2fsprogs, f2fs-tools, f2fsck, lsattr, mkf2fs, xfs-fsck, xfs-mkfs
+                 -> Compression -> bsdtar or p7zip (unofficial source), pigz
+                 -> Shells -> bash         
+                 -> gawk, getopt, losetup, tar, uuidgen
 
-        * (可选)Wifi基础包：
-        *     打出的包可支持博通SDIO无线模块,Firmware不用选，
-        *     因为打包源码中已经包含了来自Armbian的firmware，
-        *     会自动覆盖openwrt rootfs中已有的firmware
-        Kernel modules  ->   Wireless Drivers -> kmod-brcmfmac(SDIO) 
+        * (Optional) Wifi Basic Package:
+        * The printed package can support Broadcom SDIO wireless module, Firmware does not need to be selected,
+        * Because the firmware from Armbian is already included in the package source code,
+        * Will automatically overwrite the existing firmware in openwrt rootfs
+        Kernel modules -> Wireless Drivers -> kmod-brcmfmac(SDIO)
                                               -> kmod-brcmutil
                                               -> kmod-cfg80211
                                               -> kmod-mac80211
-        Network  ->  WirelessAPD -> hostapd-common
+        Network -> WirelessAPD -> hostapd-common
                                  -> wpa-cli
                                  -> wpad-basic
-                 ->  iw
+                 -> iw
        
     
-    除上述必选项以外的软件包可以按需自主选择。
+    Software packages other than the above-mentioned mandatory options can be freely selected as needed.
                  
-三、其它相关信息请参见我在恩山论坛的贴子：
+3. For other relevant information, please refer to my post on the Enshan Forum:
 
 https://www.right.com.cn/forum/thread-981406-1-1.html
 
@@ -77,26 +77,26 @@ https://www.right.com.cn/forum/thread-4055451-1-1.html
 
 https://www.right.com.cn/forum/thread-4076037-1-1.html
 
-四、TG群友打包的固件地址
+4. The firmware address packaged by TG group friends
 
-暴躁老哥：
+Grumpy Brother:
 https://github.com/breakings/OpenWrt
 
-有一妙计：
+There is a neat trick:
 https://github.com/HoldOnBro/Actions-OpenWrt/
 
-诸葛先生：
+Mr. Zhuge:
 https://github.com/hibuddies/openwrt/
 
-那坨：
+That lump:
 https://github.com/Netflixxp/N1HK1dabao
 
-五、Github Actions 打包使用方法
-    actions 源码来自 https://github.com/ophub (smith1998)，主脚本为 openwrt_flippy.sh  
+Five, Github Actions packaging method
+    The source code of actions is from https://github.com/ophub (smith1998), and the main script is openwrt_flippy.sh  
 
-在 `.github/workflows/*.yml` 云编译脚本中引入此 Actions 即可使用。详细使用说明：[README.ACTION.md](README.ACTION.md)
+Introduce this Actions in the `.github/workflows/*.yml` cloud compilation script to use. Detailed instructions for use: [README.ACTION.md](README.ACTION.md)
 
-```yaml
+````yaml
 
 - name: Package Armvirt as OpenWrt
   uses: unifreq/openwrt_packit@master
@@ -105,7 +105,7 @@ https://github.com/Netflixxp/N1HK1dabao
     PACKAGE_SOC: s905d_s905x3_beikeyun
     KERNEL_VERSION_NAME: 5.13.2_5.4.132
 
-```
-六、采用 luci-app-amlogic 在线升级
+````
+6. Use luci-app-amlogic to upgrade online
    
-   luci-app-amlogic 源码来自 https://github.com/ophub/luci-app-amlogic (smith1998)， 可以集成到openwrt固件中，并与本打包源码紧密结合，可实现在线升级内核和在线升级完整固件。
+   The source code of luci-app-amlogic comes from https://github.com/ophub/luci-app-amlogic (smith1998), which can be integrated into openwrt firmware and closely combined with this packaged source code, enabling online kernel upgrade and complete online upgrade firmware.
